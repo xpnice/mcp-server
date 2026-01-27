@@ -1,119 +1,118 @@
 # veImageX MCP Server
 
-The MCP Server implementation for veImageX provides clients with the capability to interact with Volcano Engine's veImageX service. It enables natural language-based management of veImageX cloud resources, service information queries, and integrates various image processing capabilities including text-to-image generation, AIGC quality enhancement, image expansion, and more.
+The MCP Server implementation for veImageX provides clients with the capability to interact with Volcano Engine's veImageX service. It enables natural language-based management of veImageX cloud resources, service information queries, and integrates various image processing capabilities including text-to-image generation, AIGC image translation, image expansion, and more.
 
-| Version | v0.1.0                   | 
+| Version | v0.2.0                   | 
 |---------|--------------------------|
 | Description | Manage veImageX resources and process images via MCP |
 | Category | Video Cloud               |
 | Tags | Image Processing, Asset Hosting |
 
-## Tools
+## Features (Tools)
 
-This MCP Server product provides the following Tools (capabilities):
-### Tool1: get_all_image_services
- - Description: Retrieve all service information.
- - Trigger Example: Call get_all_image_services to obtain relevant data
-### Tool2: get_all_image_templates
- - Description: Retrieve all template information.
- - Trigger Example: Call get_all_image_templates to obtain template information
-### Tool3: get_image_storage_files
- - Description: Retrieve all asset information.
- - Trigger Example: Call get_image_storage_files to obtain relevant data
-### Tool4: get_image_url_by_store_uri
- - Description: Retrieve access URLs for specified assets.
- - Trigger Example: Call get_image_url_by_store_uri to obtain access URLs for specified assets
-### Tool5: upload_image
- - Description: Upload images.
- - Trigger Example: Call upload_image to upload images
-### Tool6: generate_image_by_text
- - Description: Generate images from text.
- - Trigger Example: Call generate_image_by_text to generate images from text
-### Tool7: enhance_image_quality
- - Description: Enhance image quality based on image URLs.
- - Trigger Example: Call enhance_image_quality to enhance image quality based on image URLs
-### Tool8: convert_image_to_comic_style
- - Description: Convert images to comic style based on image URLs.
- - Trigger Example: Call convert_image_to_comic_style to convert images to comic style based on image URLs
-### Tool9: image_ocr
- - Description: Perform OCR recognition on images based on image URLs.
- - Trigger Example: Call image_ocr to perform OCR recognition on images based on image URLs
-### Tool10: expand_image
- - Description: Expand images based on image URLs.
- - Trigger Example: Call expand_image to expand images based on image URLs
+This MCP Server provides the following core tools:
 
+### Base Management Tools
+- **guide**: Get the guide for using this MCP server (**Recommended to call first**).
+- **get_all_imagex_services**: Retrieve all service information (Service ID, Bucket, Domain, etc.).
+- **upload_images**: Upload local images to a specified service.
+- **get_all_imagex_templates**: Retrieve all image templates under a specified service.
+- **get_imagex_storage_files**: List files in storage.
+- **get_image_url_by_store_uri**: Generate a public access URL for a specified asset.
 
-## Compatible Platforms
+### AI Image Processing Tool (ai_image_process)
+An all-in-one tool that executes different AI tasks by specifying an `action_type`. Supported capabilities include:
+- **cloud_sr**: Cloud Super Resolution (2-8x zoom).
+- **smart_expansion**: Intelligent Image Extension (outpainting).
+- **aigc_sr**: AIGC Super Resolution (detail enhancement).
+- **translate**: AIGC Image Translation (supports 30+ languages).
+- **quality_assessment**: Large Model Image Quality Assessment.
+- **product_creative**: E-commerce Creative Generation (product image generation).
+- **remove_text**: E-commerce Text Removal.
+- **ocr**: Optical Character Recognition (OCR).
+- **remove_bg**: Smart Background Removal (segmentation).
+- **seedream**: ImageX-SeeDream Generation.
 
-Ark, Trae, Cursor
+## Environment Variables
 
-## Service Activation Link (Full Product)
+You can configure the MCP server using the following environment variables:
 
-<https://console.volcengine.cn/imagex?utm_source=tdgfha&utm_medium=oesbpg&utm_term=mcp-pr-01&utm_campaign=&utm_content=ImageX>
+| Variable | Description | Required |
+| :--- | :--- | :--- |
+| `VOLCENGINE_ACCESS_KEY` | Volcano Engine account ACCESS KEY | Yes |
+| `VOLCENGINE_SECRET_KEY` | Volcano Engine account SECRET KEY | Yes |
+| `SERVICE_ID` | Default veImageX service ID | Recommended |
+| `DOMAIN_NAME` | Default veImageX domain | Recommended, using the default acceleration domain configured in the service is highly recommended. |
+| `CREATIVE_FLOW_ID` | Default Creative Flow ID for product_creative | Optional |
+| `MCP_TOOL_GROUPS` | Tool group configuration, supports secondary grouping | Default: `default,aiprocess` |
 
-## Authentication Method
-
-Volcano Engine: Obtain the access key ID, secret access key, and region from the Volcano Engine management console. Please set the relevant environment variables in the .env file.
-
-### Environment Variables
-
-The following environment variables can be used to configure the MCP server:
-
-| Environment Variable      | Description                  | Default Value |
-|---------------------------|------------------------------|---------------|
-| `VOLCENGINE_ACCESS_KEY` | Volcano Engine account ACCESS KEY | -   |
-| `VOLCENGINE_SECRET_KEY` | Volcano Engine account SECRET KEY | -   |
-| `SERVICE_ID`    | veImageX service ID         | -   |
-| `DOMAIN_NAME`    | veImageX domain        | -   |
+### Secondary Grouping Loading
+To reduce context pressure on the client, you can specify specific AI capabilities via `MCP_TOOL_GROUPS`:
+- `aiprocess`: Load all AI capabilities.
+- `aiprocess.ocr,aiprocess.translate`: Load only OCR and translation capabilities.
 
 ## Installation & Deployment
 
 ### System Requirements
+- Python 3.11 or higher.
+- [uv](https://astral.sh/uv/).
 
-- Install Python 3.11 or higher
-- Install uv
-    - For Linux systems
-    ```
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-   ```
-    - For Windows systems
-    ```
-    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-    ```
-    - Synchronize dependencies and update uv.lock:
-    ```bash
-    uv sync
-    ```
-    - Build MCP server:
-    ```bash
-    uv build
-    ```
+### Running Locally
 
-## Using uvx
-### Local Configuration
-- Add the following configuration to your MCP settings file
+**Using uvx (Recommended)**
+If you have [uv](https://astral.sh/uv/) installed, you can run it directly:
+```bash
+# Start in Stdio mode (Default)
+uvx mcp-server-veimagex
+# Start in SSE mode (HTTP URL access)
+uvx mcp-server-veimagex --transport sse --port 8000
+# Start in Streamable HTTP mode
+uvx mcp-server-veimagex --transport streamable-http --port 8000
+```
+
+**Using uv with source code**
+```bash
+uv sync
+# Start in Stdio mode (Default)
+uv run mcp-server-veimagex
+# Start in SSE mode
+uv run mcp-server-veimagex --transport sse --port 8000
+# Start in Streamable HTTP mode
+uv run mcp-server-veimagex --transport streamable-http --port 8000
+```
+
+## Client Configuration (Example)
+
+### Trae / Cursor / Claude Desktop
+Add the following configuration to your MCP settings file:
+
+**Using uvx (Recommended)**
 ```json
 {
-  "mcp-server": {
-    "veimagex-mcp": {
+  "mcpServers": {
+    "veimagex": {
       "command": "uvx",
-      "args": [
-        "--from",
-        "git+https://github.com/volcengine/mcp-server#subdirectory=server/mcp_server_veimagex",
-        "mcp-server-veimagex"
-      ],
+      "args": ["mcp-server-veimagex"],
       "env": {
-        "VOLCENGINE_ACCESS_KEY": "Your Volcengine AK",
-        "VOLCENGINE_SECRET_KEY": "Your Volcengine SK",
-        "SERVICE_ID": "Your Service ID",
-        "DOMAIN_NAME": "Your Domain"
+        "VOLCENGINE_ACCESS_KEY": "Your Volcano Engine AK",
+        "VOLCENGINE_SECRET_KEY": "Your Volcano Engine SK",
+        "SERVICE_ID": "Your Default Service ID",
+        "DOMAIN_NAME": "Your Default Domain",
+        "CREATIVE_FLOW_ID": "Your Default Creative Flow ID",
+        "MCP_TOOL_GROUPS": "default,aiprocess"
       }
     }
   }
 }
 ```
 
+**Using Python directly**
 
-# License
+## Compatible Platforms
+Ark, Trae, cursor
+
+## Service Activation
+<https://console.volcengine.cn/imagex>
+
+## License
 MIT
-    

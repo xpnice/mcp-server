@@ -221,7 +221,18 @@ api_info = {
         "GET", "/", {"Action": "GetAllCerts", "Version": "2023-05-01"}, {}, {}
     ),
     "McpGetResourceURL": ApiInfo(
-        "GET", "/", {"Action": "GetResourceURL", "Version": "2023-05-01"}, {}, {}
+        "GET",
+        "/",
+        {"Action": "GetResourceURL", "Version": "2023-05-01"},
+        {},
+        {},
+    ),
+    "McpAIProcess": ApiInfo(
+        "POST",
+        "/",
+        {"Action": "AIProcess", "Version": "2023-05-01"},
+        {},
+        {},
     ),
     "McpExportFailedMigrateTask": ApiInfo(
         "GET",
@@ -332,6 +343,9 @@ api_info = {
     ),
     "McpGetAllImageServices": ApiInfo(
         "GET", "/", {"Action": "GetAllImageServices", "Version": "2018-08-01"}, {}, {}
+    ),
+    "McpGetResourceURL": ApiInfo(
+        "GET", "/", {"Action": "GetResourceURL", "Version": "2023-05-01"}, {}, {}
     ),
     "McpDescribeImageXBucketRetrievalUsage": ApiInfo(
         "GET",

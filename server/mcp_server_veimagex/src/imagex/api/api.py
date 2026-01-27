@@ -16,7 +16,10 @@ class ImagexAPI(ImagexService):
         self.service_info.header["x-tt-mcp"] = 'volc'
         self.api_info = {**self.api_info, **api_info}
         self.service_id = os.getenv("SERVICE_ID")
-        self.domain = os.getenv("DOMAIN_NAME")
+        if self.service_id:
+            self.domain = os.getenv("DOMAIN_NAME")
+        else:
+            self.domain = None
         self.set_connection_timeout(100)
         self.set_socket_timeout(100)
 
@@ -28,8 +31,26 @@ class ImagexAPI(ImagexService):
         return res_json
 
     def mcp_post(self, action, params={}, body={}):
-        res = self.json(action, params, body)
+        if not body:
+            body = {}
+        res = self.json(action, params, json.dumps(body))
         if res == "":
             raise Exception("%s: empty response" % action)
         res_json = json.loads(json.dumps(res))
         return res_json
+
+    def get_all_image_services(self, params):
+        return self.mcp_get("McpGetAllImageServices", params)
+
+    def get_all_image_templates(self, params):
+        return self.mcp_get("McpGetAllImageTemplates", params)
+
+    def get_image_storage_files(self, params):
+        return self.mcp_get("McpGetImageStorageFiles", params)
+
+
+    def get_resource_url(self, params):
+        return self.mcp_get("McpGetResourceURL", params)
+
+    def post_ai_process(self, body):
+        return self.mcp_post("McpAIProcess", {}, body)

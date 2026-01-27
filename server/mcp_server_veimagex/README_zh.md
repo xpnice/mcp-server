@@ -1,118 +1,118 @@
 # veImageX MCP Server
 
-veImageX的MCP Server实现，为MCP客户端提供与火山引擎veImageX服务交互的能力。可以基于自然语言管理veImageX云端资源，查询服务信息，集成了包括文生图、AIGC画质修复、图像扩展等图像处理能力。
+veImageX 的 MCP Server 实现，为 MCP 客户端提供与火山引擎 veImageX 服务交互的能力。可以基于自然语言管理 veImageX 云端资源，查询服务信息，集成了包括文生图、AIGC 图片翻译、图像扩展等多项图像处理能力。
 
-| 版本 | v0.1.0                   | 
+| 版本 | v0.2.0                   | 
 |----|--------------------------|
 | 描述 | 基于 MCP 管理 veImageX 资源，处理图片 |
 | 分类 | 视频云                       |
 | 标签 | 图像处理，素材托管              |
 
-## Tools
+## 功能特性 (Tools)
 
-本 MCP Server 产品提供以下 Tools (工具/能力):
-### Tool1: get_all_image_services
- - 详细描述：获取所有服务信息。
- - 触发示例：调用 get_all_image_services 获取相关数据
-### Tool2: get_all_image_templates
- - 详细描述：获取所有模板信息。
- - 触发示例：调用 get_all_image_templates 获取模板信息
-### Tool3: get_image_storage_files
- - 详细描述：获取所有资源信息。
- - 触发示例：调用 get_image_storage_files 获取相关数据
-### Tool4: get_image_url_by_store_uri
- - 详细描述：获取指定资源的访问链接。
- - 触发示例：调用 get_image_url_by_store_uri 获取指定资源的访问链接
-### Tool5: upload_image
- - 详细描述：上传图片。
- - 触发示例：调用 upload_image 上传图片
-### Tool6: generate_image_by_text
- - 详细描述：根据文本生成图片。
- - 触发示例：调用 generate_image_by_text 根据文本生成图片
-### Tool7: enhance_image_quality
- - 详细描述：根据图片URL，对图片进行画质增强。
- - 触发示例：调用 enhance_image_quality 根据图片URL，对图片进行画质增强
-### Tool8: convert_image_to_comic_style
- - 详细描述：根据图片URL，对图片进行漫画风格转换。
- - 触发示例：调用 convert_image_to_comic_style 根据图片URL，对图片进行漫画风格转换
-### Tool9: image_ocr
- - 详细描述：根据图片URL，对图片进行OCR识别。
- - 触发示例：调用 image_ocr 根据图片URL，对图片进行OCR识别
-### Tool10: expand_image
- - 详细描述：根据图片URL，对图片进行扩展。
- - 触发示例：调用 expand_image 根据图片URL，对图片进行扩展
+本 MCP Server 提供以下核心工具：
 
+### 基础管理工具
+- **guide**: 获取 MCP 服务使用指南（**建议首次使用时调用**）。
+- **get_all_imagex_services**: 获取所有服务信息（Service ID, Bucket, Domain 等）。
+- **upload_images**: 上传本地图片到指定服务。
+- **get_all_imagex_templates**: 获取指定服务下的所有图片模板。
+- **get_imagex_storage_files**: 获取存储中的文件列表。
+- **get_image_url_by_store_uri**: 获取指定资源的公共访问链接。
 
-## 可适配平台
+### AI 图像处理工具 (ai_image_process)
+这是一个全能型工具，通过指定 `action_type` 来执行不同的 AI 任务。支持的能力包括：
+- **cloud_sr**: 图像超分辨率（云端），支持 2-8 倍放大。
+- **smart_expansion**: 智能图像拓展 (Outpainting)。
+- **aigc_sr**: AIGC 图片超分（大模型细节增强）。
+- **translate**: AIGC 图片翻译（支持 30+ 语言）。
+- **quality_assessment**: 大模型画质评估。
+- **product_creative**: 电商万创 (商品图生成)。
+- **remove_text**: 电商牛皮鲜擦除。
+- **ocr**: 文字识别 OCR。
+- **remove_bg**: 智能背景移除 (抠图)。
+- **seedream**: ImageX-SeeDream 生图方案。
 
-方舟，Trae，cursor
+## 环境变量配置
 
-## 服务开通链接 (整体产品)
+您可以通过以下环境变量配置 MCP 服务器：
 
-<https://console.volcengine.cn/imagex?utm_source=tdgfha&utm_medium=oesbpg&utm_term=mcp-pr-01&utm_campaign=&utm_content=ImageX>
+| 环境变量 | 描述 | 是否必需 |
+| :--- | :--- | :--- |
+| `VOLCENGINE_ACCESS_KEY` | 火山引擎账号 ACCESS KEY | 是 |
+| `VOLCENGINE_SECRET_KEY` | 火山引擎账号 SECRET KEY | 是 |
+| `SERVICE_ID` | 默认 veImageX 服务 ID | 建议配置 |
+| `DOMAIN_NAME` | 默认 veImageX 域名 | 建议配置，尤其推荐使用在服务配置中开启的公网默认加速域名 |
+| `CREATIVE_FLOW_ID` | 默认电商万创创意流 ID | 可选 |
+| `MCP_TOOL_GROUPS` | 工具分组配置，支持二级分组加载 | 默认 `default,aiprocess` |
 
-## 鉴权方式
-
-火山引擎，从 volcengine 管理控制台获取 volcengine 访问密钥 ID、秘密访问密钥和区域，请在.env文件中设置相关环境变量
-
-### 环境变量
-
-以下环境变量可用于配置MCP服务器:
-
-| 环境变量             | 描述                     | 默认值 |
-|------------------|------------------------|-----|
-| `VOLCENGINE_ACCESS_KEY` | 火山引擎账号 ACCESS KEY      | -   |
-| `VOLCENGINE_SECRET_KEY` | 火山引擎账号 SECRET KEY      | -   |
-| `SERVICE_ID`    | veImageX 服务 ID         | -   |
-| `DOMAIN_NAME`    | veImageX 域名        | -   |
+### 二级分组加载说明
+为了减轻客户端上下文压力，可以通过 `MCP_TOOL_GROUPS` 指定仅加载特定的 AI 能力：
+- `aiprocess`: 加载全部 AI 能力。
+- `aiprocess.ocr,aiprocess.translate`: 仅加载 OCR 和翻译能力。
 
 ## 安装部署
 
 ### 系统依赖
+- Python 3.11 或更高版本。
+- [uv](https://astral.sh/uv/)。
 
-- 安装 Python 3.11 或者更高版本
-- 安装 uv
-    - 如果是linux系统
-    ```
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-   ```
-    - 如果是window系统
-    ```
-    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-    ```
-    - 同步依赖项并更uv.lock:
-    ```bash
-    uv sync
-    ```
-    - 构建mcp server:
-    ```bash
-    uv build
-    ```
+### 本地运行
 
-## Using uvx
-### 本地配置
-- 添加以下配置到你的 mcp settings 文件中
+**使用 uvx (推荐)**
+如果您已安装 [uv](https://astral.sh/uv/)，可以直接运行：
+```bash
+# 启动标准输入输出模式 (Default)
+uvx mcp-server-veimagex
+# 启动 SSE 模式 (HTTP URL 访问)
+uvx mcp-server-veimagex --transport sse --port 8000
+# 启动 Streamable HTTP 模式
+uvx mcp-server-veimagex --transport streamable-http --port 8000
+```
+
+**使用 uv 运行源码**
+```bash
+uv sync
+# 启动标准输入输出模式 (Default)
+uv run mcp-server-veimagex
+# 启动 SSE 模式
+uv run mcp-server-veimagex --transport sse --port 8000
+# 启动 Streamable HTTP 模式
+uv run mcp-server-veimagex --transport streamable-http --port 8000
+```
+
+## 客户端配置 (示例)
+
+### Trae / Cursor / Claude Desktop
+添加以下配置到您的 MCP settings 文件中：
+
+**使用 uvx (推荐)**
 ```json
 {
-  "mcp-server": {
-    "veimagex-mcp": {
+  "mcpServers": {
+    "veimagex": {
       "command": "uvx",
-      "args": [
-        "--from",
-        "git+https://github.com/volcengine/mcp-server#subdirectory=server/mcp_server_veimagex",
-        "mcp-server-veimagex"
-      ],
+      "args": ["mcp-server-veimagex"],
       "env": {
-        "VOLCENGINE_ACCESS_KEY": "Your Volcengine AK",
-        "VOLCENGINE_SECRET_KEY": "Your Volcengine SK",
-        "SERVICE_ID": "Your Service ID",
-        "DOMAIN_NAME": "Your Domain"
+        "VOLCENGINE_ACCESS_KEY": "您的火山引擎 AK",
+        "VOLCENGINE_SECRET_KEY": "您的火山引擎 SK",
+        "SERVICE_ID": "您的默认 Service ID",
+        "DOMAIN_NAME": "您的默认域名",
+        "CREATIVE_FLOW_ID": "您的默认创意流 ID",
+        "MCP_TOOL_GROUPS": "default,aiprocess"
       }
     }
   }
 }
 ```
 
+**使用 Python 直接运行**
 
-# License
+## 可适配平台
+方舟，Trae，cursor
+
+## 服务开通
+<https://console.volcengine.cn/imagex>
+
+## License
 MIT

@@ -19,9 +19,9 @@ def main():
     parser = argparse.ArgumentParser(description="Run the veImageX MCP Server")
     parser.add_argument(
         "--transport", "-t",
-        choices=["sse", "stdio"],
+        choices=["sse", "stdio", "streamable-http"],
         default="stdio",
-        help="Transport protocol to use (sse or stdio)"
+        help="Transport protocol to use (sse, stdio, or streamable-http)"
     )
     args = parser.parse_args()
 
