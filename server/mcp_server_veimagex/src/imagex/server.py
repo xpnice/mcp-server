@@ -30,17 +30,19 @@ def main():
     try:
         mcp = create_mcp_server()
         
-        # Use values from arguments if provided, else use the ones from FastMCP instance (which read env vars)
-        final_host = args.host if args.host else mcp.host
-        final_port = args.port if args.port else mcp.port
-        
-        logger.info("Starting MCP Server veImageX with %s transport on %s:%s", 
-                    args.transport, final_host, final_port)
+        logger.info("Starting MCP Server veImageX with %s transport", args.transport)
         
         if args.transport == "stdio":
             asyncio.run(mcp.run(transport="stdio"))
         else:
-            asyncio.run(mcp.run(transport=args.transport, host=final_host, port=final_port))
+            # Only pass host and port if they were explicitly provided via CLI
+            run_kwargs = {"transport": args.transport}
+            if args.host:
+                run_kwargs["host"] = args.host
+            if args.port:
+                run_kwargs["port"] = args.port
+            
+            asyncio.run(mcp.run(**run_kwargs))
     except Exception as e:
         logger.error(f"Error starting veImageX MCP Server: {str(e)}")
         sys.exit(1)
