@@ -2,8 +2,8 @@ import os
 import json
 import base64
 from mcp.server.fastmcp import FastMCP
-from .api.api import ImagexAPI
-from .ai_workflows import ALL_HANDLERS, AIWorkflowContext
+from src.imagex.api.api import ImagexAPI
+from src.imagex.ai_workflows import ALL_HANDLERS, AIWorkflowContext
 
 
 def Error(message: str):

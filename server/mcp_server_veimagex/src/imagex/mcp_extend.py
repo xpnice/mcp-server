@@ -1,6 +1,6 @@
-from .api.api import ImagexAPI
-from .note import note
-from utils.response import HandlerVolcResponse
+from src.imagex.api.api import ImagexAPI
+from src.imagex.note import note
+from src.utils.response import HandlerVolcResponse
 import json
 
 

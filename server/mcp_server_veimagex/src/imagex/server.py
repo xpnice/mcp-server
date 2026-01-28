@@ -1,6 +1,6 @@
 # coding:utf-8
 
-from .mcp_server import create_mcp_server
+from src.imagex.mcp_server import create_mcp_server
 from dotenv import load_dotenv
 import asyncio
 import sys
