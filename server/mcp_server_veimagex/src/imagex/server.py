@@ -23,12 +23,24 @@ def main():
         default="stdio",
         help="Transport protocol to use (sse, stdio, or streamable-http)"
     )
+    parser.add_argument("--host", help="Host to bind to for HTTP transports")
+    parser.add_argument("--port", type=int, help="Port to bind to for HTTP transports")
     args = parser.parse_args()
 
     try:
         mcp = create_mcp_server()
-        logger.info("Starting MCP Server veImageX with %s transport", args.transport)
-        asyncio.run(mcp.run(transport=args.transport))
+        
+        # Use values from arguments if provided, else use the ones from FastMCP instance (which read env vars)
+        final_host = args.host if args.host else mcp.host
+        final_port = args.port if args.port else mcp.port
+        
+        logger.info("Starting MCP Server veImageX with %s transport on %s:%s", 
+                    args.transport, final_host, final_port)
+        
+        if args.transport == "stdio":
+            asyncio.run(mcp.run(transport="stdio"))
+        else:
+            asyncio.run(mcp.run(transport=args.transport, host=final_host, port=final_port))
     except Exception as e:
         logger.error(f"Error starting veImageX MCP Server: {str(e)}")
         sys.exit(1)

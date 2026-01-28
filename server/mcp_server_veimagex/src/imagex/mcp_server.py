@@ -33,6 +33,10 @@ DEFAULT_GROUPS = ["default", "aiprocess"]
 def create_mcp_server():
     mcp = FastMCP(
         "VeImageX MCP",
+        host=os.getenv("MCP_SERVER_HOST", "0.0.0.0"),
+        port=int(os.getenv("MCP_SERVER_PORT", "8000")),
+        stateless_http=os.getenv("STATLESS_HTTP", "true").lower() == "true",
+        streamable_http_path=os.getenv("STREAMABLE_HTTP_PATH", "/mcp"),
         instructions="Volcengine ImageX MCP, your image processing, storage, and distribution assistant. \nIMPORTANT: You MUST call the 'guide' tool FIRST to understand the workflow rules before using any other tools.",
     )
     imagex_service = ImagexAPI()
