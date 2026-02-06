@@ -33,7 +33,11 @@ An all-in-one tool that executes different AI tasks by specifying an `action_typ
 - **remove_bg**: Smart Background Removal (segmentation).
 - **seedream**: ImageX-SeeDream Generation.
 
-## Environment Variables
+## Dynamic Configuration & Environment Variables
+
+In addition to traditional environment variables, this server supports dynamic configuration via HTTP Headers (SSE and Streamable HTTP modes only), which is useful in multi-tenant or proxy scenarios.
+
+### Environment Variables
 
 You can configure the MCP server using the following environment variables:
 
@@ -41,10 +45,26 @@ You can configure the MCP server using the following environment variables:
 | :--- | :--- | :--- |
 | `VOLCENGINE_ACCESS_KEY` | Volcano Engine account ACCESS KEY | Yes |
 | `VOLCENGINE_SECRET_KEY` | Volcano Engine account SECRET KEY | Yes |
+| `VOLCENGINE_SESSION_TOKEN` | Temporary Security Token (STS Token) | No |
 | `SERVICE_ID` | Default veImageX service ID | Recommended |
-| `DOMAIN_NAME` | Default veImageX domain | Recommended, using the default acceleration domain configured in the service is highly recommended. |
-| `CREATIVE_FLOW_ID` | Default Creative Flow ID for product_creative | Optional |
+| `DOMAIN_NAME` | Default veImageX domain | Recommended |
+| `CREATIVE_FLOW_ID` | Default Creative Flow ID | Optional |
 | `MCP_TOOL_GROUPS` | Tool group configuration, supports secondary grouping | Default: `default,aiprocess` |
+
+### Dynamic Configuration via HTTP Headers (Recommended)
+
+In SSE or Streamable HTTP mode, you can override environment variables by adding the following headers to your requests:
+
+| Header | Description |
+| :--- | :--- |
+| `x-tt-access-key` | Volcano Engine ACCESS KEY |
+| `x-tt-secret-key` | Volcano Engine SECRET KEY |
+| `x-tt-session-token` | Temporary Security Token (STS Token) |
+| `x-tt-service-id` | veImageX Service ID |
+| `x-tt-domain` | veImageX Domain |
+| `x-tt-region` | Region (e.g., cn-north-1) |
+
+**Precedence:** HTTP Headers > Command-line Arguments > Environment Variables.
 
 ### Secondary Grouping Loading
 To reduce context pressure on the client, you can specify specific AI capabilities via `MCP_TOOL_GROUPS`:

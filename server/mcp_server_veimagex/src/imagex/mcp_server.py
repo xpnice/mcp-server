@@ -51,13 +51,54 @@ def create_mcp_server():
 
     global_tos_prefix = None
 
+    def get_imagex_client():
+        try:
+            from mcp.server.fastmcp import Context
+            from starlette.requests import Request
+            
+            ctx: Context = mcp.get_context()
+            raw_request: Request | None = ctx.request_context.request
+            
+            if not raw_request:
+                return imagex_service
+                
+            headers = raw_request.headers
+            
+            # Extract credentials from headers (Priority: Header > Global Instance/Env)
+            ak = headers.get("x-tt-access-key")
+            sk = headers.get("x-tt-secret-key")
+            token = headers.get("x-tt-session-token")
+            region = headers.get("x-tt-region")
+            sid = headers.get("x-tt-service-id")
+            domain = headers.get("x-tt-domain")
+            
+            # If any essential credential header is present, create a dynamic client
+            if ak or sk or token or sid:
+                return ImagexAPI(
+                    ak=ak, 
+                    sk=sk, 
+                    session_token=token, 
+                    region=region, 
+                    service_id=sid, 
+                    domain=domain
+                )
+        except Exception:
+            pass
+        return imagex_service
+
     def get_effective_config(arg_service_id: str = None, arg_domain: str = None):
-        final_service_id = arg_service_id if arg_service_id else global_service_id
-        final_domain = arg_domain if arg_domain else global_domain
+        client = get_imagex_client()
+        # Use client-specific config if available, otherwise fallback to global
+        base_sid = client.service_id if hasattr(client, 'service_id') and client.service_id else global_service_id
+        base_domain = client.domain if hasattr(client, 'domain') and client.domain else global_domain
+        
+        final_service_id = arg_service_id if arg_service_id else base_sid
+        final_domain = arg_domain if arg_domain else base_domain
         return final_service_id, final_domain
 
     def check_and_get_tos_prefix(service_id: str) -> str:
         nonlocal global_tos_prefix
+        client = get_imagex_client()
         
         if not service_id:
             return global_tos_prefix
@@ -66,7 +107,7 @@ def create_mcp_server():
             return global_tos_prefix
 
         try:
-            res = imagex_service.get_all_image_services({"SearchPtn": service_id})
+            res = client.get_all_image_services({"SearchPtn": service_id})
             if isinstance(res, str):
                 try:
                     res = json.loads(res)

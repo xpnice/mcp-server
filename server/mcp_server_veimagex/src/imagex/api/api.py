@@ -5,21 +5,27 @@ import json
 
 
 class ImagexAPI(ImagexService):
-    def __init__(self):
-        if os.getenv("VOLCENGINE_REGION") is None:
-            region = "cn-north-1"
-        else:
-            region = os.getenv("VOLCENGINE_REGION")
+    def __init__(self, ak=None, sk=None, session_token=None, region=None, service_id=None, domain=None):
+        if region is None:
+            region = os.getenv("VOLCENGINE_REGION", "cn-north-1")
         super().__init__(region=region)
-        self.set_ak(os.getenv("VOLCENGINE_ACCESS_KEY"))
-        self.set_sk(os.getenv("VOLCENGINE_SECRET_KEY"))
+        
+        # Priority: arguments > environment variables
+        final_ak = ak if ak else os.getenv("VOLCENGINE_ACCESS_KEY")
+        final_sk = sk if sk else os.getenv("VOLCENGINE_SECRET_KEY")
+        final_token = session_token if session_token else os.getenv("VOLCENGINE_SESSION_TOKEN")
+        
+        self.set_ak(final_ak)
+        self.set_sk(final_sk)
+        if final_token:
+            self.set_session_token(final_token)
+            
         self.service_info.header["x-tt-mcp"] = 'volc'
         self.api_info = {**self.api_info, **api_info}
-        self.service_id = os.getenv("SERVICE_ID")
-        if self.service_id:
-            self.domain = os.getenv("DOMAIN_NAME")
-        else:
-            self.domain = None
+        
+        self.service_id = service_id if service_id else os.getenv("SERVICE_ID")
+        self.domain = domain if domain else os.getenv("DOMAIN_NAME")
+        
         self.set_connection_timeout(100)
         self.set_socket_timeout(100)
 

@@ -33,7 +33,11 @@ veImageX 的 MCP Server 实现，为 MCP 客户端提供与火山引擎 veImageX
 - **remove_bg**: 智能背景移除 (抠图)。
 - **seedream**: ImageX-SeeDream 生图方案。
 
-## 环境变量配置
+## 动态配置与环境变量
+
+除了传统的环境变量配置，本服务器还支持通过 HTTP Header 动态指定配置（仅限 SSE 和 Streamable HTTP 模式），这在多租户或代理场景下非常有用。
+
+### 环境变量
 
 您可以通过以下环境变量配置 MCP 服务器：
 
@@ -41,10 +45,26 @@ veImageX 的 MCP Server 实现，为 MCP 客户端提供与火山引擎 veImageX
 | :--- | :--- | :--- |
 | `VOLCENGINE_ACCESS_KEY` | 火山引擎账号 ACCESS KEY | 是 |
 | `VOLCENGINE_SECRET_KEY` | 火山引擎账号 SECRET KEY | 是 |
+| `VOLCENGINE_SESSION_TOKEN` | 临时安全令牌 (STS Token) | 否 |
 | `SERVICE_ID` | 默认 veImageX 服务 ID | 建议配置 |
-| `DOMAIN_NAME` | 默认 veImageX 域名 | 建议配置，尤其推荐使用在服务配置中开启的公网默认加速域名 |
+| `DOMAIN_NAME` | 默认 veImageX 域名 | 建议配置 |
 | `CREATIVE_FLOW_ID` | 默认电商万创创意流 ID | 可选 |
 | `MCP_TOOL_GROUPS` | 工具分组配置，支持二级分组加载 | 默认 `default,aiprocess` |
+
+### 通过 HTTP Header 动态配置 (推荐)
+
+在 SSE 或 Streamable HTTP 模式下，您可以通过在请求中添加以下 Header 来覆盖环境变量，实现动态身份切换：
+
+| Header | 对应配置 |
+| :--- | :--- |
+| `x-tt-access-key` | 火山引擎 ACCESS KEY |
+| `x-tt-secret-key` | 火山引擎 SECRET KEY |
+| `x-tt-session-token` | 临时安全令牌 (STS Token) |
+| `x-tt-service-id` | veImageX 服务 ID |
+| `x-tt-domain` | veImageX 域名 |
+| `x-tt-region` | 区域 (如 cn-north-1) |
+
+**配置优先级：** HTTP Header > 启动参数 > 环境变量。
 
 ### 二级分组加载说明
 为了减轻客户端上下文压力，可以通过 `MCP_TOOL_GROUPS` 指定仅加载特定的 AI 能力：
