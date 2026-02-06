@@ -66,6 +66,29 @@ veImageX 的 MCP Server 实现，为 MCP 客户端提供与火山引擎 veImageX
 
 **配置优先级：** HTTP Header > 启动参数 > 环境变量。
 
+### API Gateway / 托管模式配置 (入站鉴权)
+
+如果您是通过 API Gateway 或云端托管方式访问 MCP 服务（如方舟、Trae 等平台），通常需要配置入站鉴权（Authorization）以及动态业务凭证。
+
+**配置示例：**
+
+```json
+{ 
+   "mcpServers": { 
+     "veimagex_cloud": { 
+       "url": "https://your-gateway-url.com/mcp", 
+       "headers": { 
+         "Authorization": "Bearer YOUR_GATEWAY_TOKEN",
+         "x-tt-access-key": "YOUR_VOLC_AK", 
+         "x-tt-secret-key": "YOUR_VOLC_SK",
+         "x-tt-service-id": "YOUR_SERVICE_ID",
+         "x-tt-domain": "YOUR_DOMAIN_NAME"
+       } 
+     } 
+   } 
+}
+```
+
 ### 二级分组加载说明
 为了减轻客户端上下文压力，可以通过 `MCP_TOOL_GROUPS` 指定仅加载特定的 AI 能力：
 - `aiprocess`: 加载全部 AI 能力。

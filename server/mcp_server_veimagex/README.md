@@ -66,6 +66,29 @@ In SSE or Streamable HTTP mode, you can override environment variables by adding
 
 **Precedence:** HTTP Headers > Command-line Arguments > Environment Variables.
 
+### API Gateway / Managed Mode Configuration (Inbound Auth)
+
+When accessing the MCP service via API Gateway or cloud-hosted solutions (e.g., Ark, Trae), you typically need to configure inbound authentication (`Authorization`) along with dynamic business credentials.
+
+**Configuration Example:**
+
+```json
+{ 
+   "mcpServers": { 
+     "veimagex_cloud": { 
+       "url": "https://your-gateway-url.com/mcp", 
+       "headers": { 
+         "Authorization": "Bearer YOUR_GATEWAY_TOKEN",
+         "x-tt-access-key": "YOUR_VOLC_AK", 
+         "x-tt-secret-key": "YOUR_VOLC_SK",
+         "x-tt-service-id": "YOUR_SERVICE_ID",
+         "x-tt-domain": "YOUR_DOMAIN_NAME"
+       } 
+     } 
+   } 
+}
+```
+
 ### Secondary Grouping Loading
 To reduce context pressure on the client, you can specify specific AI capabilities via `MCP_TOOL_GROUPS`:
 - `aiprocess`: Load all AI capabilities.
